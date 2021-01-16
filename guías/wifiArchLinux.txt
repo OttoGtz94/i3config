@@ -1,0 +1,24 @@
+Conocer las interfaces
+ip addr 
+
+Levantar la interfaz
+ip link set interfaz up
+
+Ingresar información de la red en
+sudo nano /etc/wpa_supplicant.conf
+
+network={
+ssid="Nombre de la red"
+proto=RSN
+key_mgmt=WPA-PSK
+pairwise=CCMP TKIP
+group=CCMP TKIP
+psk="contraseña de la red"
+}
+
+Correr wpa_suplicant
+sudo wpa_supplicant -B -i interfaz -c /etc/wpa_supplicant.conf
+
+Asignar IP
+sudo dhcpcd wifi
+

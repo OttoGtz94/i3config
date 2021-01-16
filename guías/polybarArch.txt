@@ -1,0 +1,210 @@
+Instalamos por yay polybar
+yay -S polybar
+Nos pareceran los siguientes mensajes:
+'Enter a number' Damos '1'
+'Remove make dependencies after install' Damos 'y'
+'Diffs to show' Damos 'N'
+Nos pedira la contraseña y la ponemos
+Nos pedira que si procedemos con la instalación y decimos que si
+
+Instalamos xorg fonts
+sudo pacman -S xorg-fonts-misc
+
+Instalamos por yay siji-git y ttf-unifont
+yay -S siji-git ttf-unifont
+Nos apareceran los siguientes mensajes
+'Diffs to show' y dame 'N'
+'Import' damos enter
+
+NOTA:Si da error al instalar ttf-unifont copiamos el archivo gpg.conf que esta en ~/.gnupg/gpg.conf a la carpeta /etc/pacman.d/gnupg/gpg.conf y al arhivo que esta en /etc/pacman.d/gnupg/gpg.conf se le agrega la línea 'keyserver pool.sks-keyservers.net'
+
+Creamos una carpeta llamada 'polybar' dentro de .config
+mkdir .config/polybar
+Copiamos el archivo de configuración de polybar
+sudo cp /usr/share/doc/polybar/config ~/.config/polybar/
+Le damos permiso 
+chmod 777 .config/polybar/config
+
+
+Ahora vamos al repositorio de git de polybar
+github.com/polybar/polybar
+github.com/polybar/polybar/wiki
+y copiamos el script dentro de la segunda URL, el script es el que esta debajo del titulo 'Launching the bar in your wms bootstrap routine'
+se pegara en un nuevo archivo que se llamara launch.sh que estara dentro de '.config/polybar/'
+----Inicio Script
+#!/usr/bin/env bash
+
+# Terminate already running bar instances
+killall -q polybar
+# If all your bars have ipc enabled, you can also use 
+# polybar-msg cmd quit
+
+# Launch bar1 and bar2
+echo "---" | tee -a /tmp/polybar1.log /tmp/polybar2.log
+polybar bar1 2>&1 | tee -a /tmp/polybar1.log & disown
+polybar bar2 2>&1 | tee -a /tmp/polybar2.log & disown
+
+echo "Bars launched..."
+----Fin script
+
+y borramos la linea 'polybar bar2 2>&1 | tee -a /tmp/polybar2.log & disown'
+el script debe quedar de la siguiente manera:
+
+----Inicio Script
+#!/usr/bin/env bash
+
+# Terminate already running bar instances
+killall -q polybar
+# If all your bars have ipc enabled, you can also use 
+# polybar-msg cmd quit
+
+# Launch bar1 and bar2
+echo "---" | tee -a /tmp/polybar1.log /tmp/polybar2.log
+polybar example >>/tmp/polybar1.log 2>&1 &
+
+
+echo "Bars launched..."
+----Fin Script
+y le damos permisos
+sudo chmod +x .config/polybar/launch.sh
+
+Ahora en el archivo de configuración de i3
+~/.config/i3/config
+agregamos la siguiente linea hasta el final
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+
+y comentamos todo lo de bar de i3/config
+#bar {
+#   propieades
+#}
+
+Guardamos y recargamos con mod+shift+r
+
+SI todo esta bien en este punto tendría que aparecer una nueva barra 
+
+Ahora abrimos .config/polybar/config
+
+la transparencia hexadecimal va antes que el color #transColorHex
+[colors]
+;background = ${xrdb:color0:#222}
+background = #4d592231 //Aquí configuramos el color del fondo 
+background-alt = #80592231 //Configurar el fondo de la ventana focus
+;foreground = ${xrdb:color7:#222}
+foreground = #dfdfdf //color de la letra
+foreground-alt = #555 //color de letra
+primary = #ffb52a //color de la linea de abajo en workspace focus
+secondary = #e60053
+alert = #bd2c40
+
+
+en la parte
+modules-left = bspwm i3
+modules-center = mpd
+borramos bspwm y cambiamos mpd por xwindow, quedaría:
+modules-left = i3
+modules-center = xwindow
+
+En la parte
+modules-right = filesystem xbacklight alsa pulseaudio xkeyboard memory cpu wlan eth battery temperature date powermenu
+Se configura lo que aparece en la barra
+
+La configuración hecha ahora quedo así
+modules-left = i3
+modules-center = xwindow
+modules-right = filesystem xbacklight pulseaudio xkeyboard memory cpu wlan eth battery date powermenu
+
+Abajo de esto podemos agregar un separador
+separator = |
+
+Antes de:
+modules-left = i3
+modules-center = xwindow
+modules-right = filesystem xbacklight pulseaudio xkeyboard memory cpu wlan eth battery date powermenu
+vienen las fuentes, agregamos las de font awesome
+font-3 = Font Awesome 5 Free:pixelsize=12;2
+font-4 = Font Awesome 5 Free Solid:pixelsize=12;2
+font-5 = Font Awesome 5 Brands:pixelsize=12;2
+
+-----En esta parte se configura para el HDD
+mount-0 = /
+
+label-mounted = %{F#0a81f5}%mountpoint%%{F-}: %percentage_used%%
+label-unmounted = %mountpoint% not mounted
+label-unmounted-foreground = ${colors.foreground-alt}
+
+en la linea label-mounted = podemos poner el icono de fontawesome y %free%
+------------
+-----En la parte de la línea 
+; Only show workspaces on the same output as the bar
+podemos configurar los workspace, agregarle los iconos de la siguiente manera:
+ws-icon-0 = 1;icono
+Ejemplo:
+ws-icon-0 = 1;
+ws-icon-1 = 2;
+ws-icon-2 = 3;﬏
+ws-icon-3 = 4;
+ws-icon-4 = 5;
+ws-icon-5 = 6;
+ws-icon-6 = 7;
+ws-icon-7 = 8;
+ws-icon-8 = 9;
+ws-icon-9 = 10;
+ws-icon-10 = 11;
+ws-icon-11 = 12;
+
+En la linea:
+; focused = Active workspace on focused monitor
+label-focused = %index%
+cambiamos index por icon
+label-focused = %icon%
+Hacemos lo mismo para las lineas de:
+; unfocused = Inactive workspace on any monitor
+; visible = Active workspace on unfocused monitor
+; urgent = Workspace with urgency hint set
+
+Ahora en la configuración de i3 tenemos que eliminar los iconos, quedaran de la siguiente forma:
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3‎"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+set $ws11 "11"
+set $ws12 "12"
+
+----------------------
+
+Spotify polybar
+
+Vamos a la url
+https://github.com/Jvanrhijn/polybar-spotify
+
+que vendra un enlace a este link
+https://github.com/Jvanrhijn/polybar-spotify/blob/master/spotify_status.py
+copiamos el script
+y creamos un archivo dentro de .config/polybar/spotify_status.py 
+pegamos el script pegado y guardamos
+Le damos permisos
+sudo chmod +x .config/polybar/spotify_status.conf
+Ahora regresamos al primer link de spotify y copiamos lo que viene en settings
+Lo pegamos en polybar configuracion despues de cursor scroll
+Modificamos la ruta
+exec = python /home/otto/.config/polybar/spotify_status.py -f '{artist}: {song}'
+Agregamos la palabra spotify en modules-center
+modules-center = xwindow spotify
+en format prefix del modulo que pegamos de spotify pegamos el icono
+
+Actualizaciones polybar
+creamos un modulo antes del de spotify
+[module/pacman-updates]
+type = custom/script
+exec = checkupdates | wc -l
+interval = 1000
+label = Updates: %output%
+format.foreground = ${colors.foreground}
+format-prefix = "icono"
+format-prefix-foreground = #color

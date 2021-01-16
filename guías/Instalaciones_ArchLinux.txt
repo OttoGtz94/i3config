@@ -1,0 +1,157 @@
+----------------------------------------------------
+------Leer teclas
+Instalamos xmacro
+yay -S xmacro
+y ejecutamos xmacrorec2
+---------------------------------------------------------------------------
+-------Instalación Fim Visor Imagenes por consola--------------------------
+---------------------------------------------------------------------------
+yay -S fim
+para ver una imagen por consola 
+fim /home/otto/Images/nombreimagen.jpg
+o para ver una carpeta completa
+fim -R /home/otto/images
+con la tecla n vamos a la imagen siguiente y con p a la anterior, r para rotar, m para modo espejo y f para voltear
+
+---------------------------------------------------------------------------
+-------Instalación gthumb Visor Imagenes GUI--------------------------
+---------------------------------------------------------------------------
+yay -S gthumb
+
+-------Instalación MongoDB----------------------------------------------------
+
+git clone https://aur.archlinux.org/mongodb-bin.git
+
+cd mongodb-bin
+
+makepkg -si-s-i
+
+-------Instalación Robo3T-------
+git clone https://aur.archlinux.org/snapd.git
+
+cd snapd
+
+makepkg -si
+
+sudo systemctl enable --now snapd.socket
+
+sudo ln -s /var/lib/snapd/snap /snap
+
+sudo snap install robo3t-snap
+
+Ejecutar programa
+
+Crear carpeta [database] en tu usuario
+/home/carpetaUsuario/database
+
+mongod --port 27017 --dbpath /home/carpetaUsuario/database
+
+---------------------------------------------------------------------------
+
+
+-------Instalación PHP, MySql, Apache--------------------------------------
+
+#pacman -S apache php php-apache mariadb
+
+sudo pacman -S apache
+
+sudo nano /etc/httpd/conf/httpd.conf 
+#comentar # LoadModule unique_id_module modules/mod_unique_id.so
+
+sudo systemctl enable httpd
+sudo systemctl restart httpd
+sudo systemctl status httpd
+
+sudo pacman -S mysql
+
+sudo mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql 
+
+comando para habilitar e iniciar el servicio MariaDB.
+sudo systemctl enable mysqld 
+sudo systemctl start mysqld
+sudo systemctl status mysqld 
+
+sudo mysql_secure_installation
+#ponemos contraseña para root
+
+
+sudo pacman -S php php-apache
+
+sudo nano /etc/httpd/conf/httpd.conf
+
+#comentar
+#LoadModule mpm_event_module modules/mod_mpm_event.so
+
+#descomentar
+LoadModule mpm_prefork_module modules/mod_mpm_prefork.so 
+
+#agregar al final
+LoadModule php7_module modules/libphp7.so
+AddHandler php7-script php
+Include conf/extra/php7_module.conf
+#guardar y salir
+
+sudo nano /srv/http/test.php
+<?php
+phpinfo();
+
+sudo systemctl restart httpd
+
+sudo pacman -S phpmyadmin
+
+sudo gedit /etc/php/php.ini
+
+#descomentar
+extension=bz2
+extension=mysqli
+
+#crear archivo de configuración para phpMyAdmin
+sudo nano /etc/httpd/conf/extra/phpmyadmin.conf
+#agregar al archivo
+Alias /phpmyadmin "/usr/share/webapps/phpMyAdmin"
+<Directory "/usr/share/webapps/phpMyAdmin">
+DirectoryIndex index.php
+AllowOverride All
+Options FollowSymlinks
+Require all granted
+</Directory>
+#guardamos y salimos
+
+sudo nano /etc/httpd/conf/httpd.conf
+#agregar al final
+Include conf/extra/phpmyadmin.conf
+#guardar y salir
+
+sudo systemctl restart httpd
+
+https://www.tutofox.com/linux/manjaro-install-apache-mariadb-mysql-php-lamp/
+---------------------------------------------------------------------------
+-------Personalización de terminal--------------------------------------
+Ir a [https://ohmybash.github.io/]
+
+y copiar y pegar en terminal (raiz)
+[sh -c "$(curl -fsSL https://raw.github.com/ohmybash/oh-my-bash/master/tools/install.sh)"]
+
+Con el editor de codigo ingresar a [~ ./basrc]
+
+Y cambiar nombre de tema en
+[OSH_THEME="nombretema"] guardar y salir
+
+[source ~/.bashrc] para aplicar cambios
+
+[https://github.com/ohmybash/oh-my-bash/wiki/Themes] Pagina con los temas
+
+---------------------------------------------------------------------------
+-------Instalación ZSH----------------------------------------------------
+[sudo pacman -S zsh zsh-completions]
+
+---------------------------------------------------------------------------
+-------Instalación nodejs, npm, typescript---------------------------------
+sudo pacman -S nodejs-lts-erbium
+sudo pacman -S npm
+sudo npm install -g typescript
+
+
+
+
+

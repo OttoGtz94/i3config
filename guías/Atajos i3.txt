@@ -1,0 +1,143 @@
+Ruta de configuración de i3
+.config/i3/config
+
+[i3lock] = Bloquear pantalla (para desbloquear solo escribe la contraseña)
+
+windows + [enter] = Nueva terminal
+wndows + [mayus] + [q] = Cerrar terminal
+windows + [mayus] + [r] = Refrescar entorno
+windows + [j] = Cambiar a izquierda
+windows + [k] = Cambiar derecha
+windows + [i] = Cambiar arriba
+windows + [m] = Cambiar abajo
+windows + [f] = Pantalla completa
+windows + [mayus] + ['numero'] = Mover la ventana en focus a al escritorio con el numero indicado
+windows + ['numero'] = Abrir numero de escritorio
+windows + [mayus] + [space] = Crear/quitar ventana flotante
+windows + [mayus] + [c] = Recarga una ventana
+windows + [mayus] + [e] = Cerrar sesion
+windows + [d] = Abre dmenu para escribir el programa deaseado
+windows + [r] = Activar/desactivar resize
+	[i]= Hacer alta
+ 	[m]= hacer baja
+	[k]= ancha
+	[j]= angosta
+#Atajos creados
+windows + [mayus] + [b] = Bloquear pantalla
+winows + [x] = Mostrar menu
+##Asignar programas a escritorios
+Primero debemos de saber el nombre de la clase del programa, en una terminal escribimos [xprop] el cursor cambiara a una cruz (debemos de tener abierto el programa que queremos conocer su clase) y damos click sobre el programa, donde dice 'WM_CLASS(STRING) = "unnombre", "estaEsLaClase"
+[for_window [class="nombreClase"] move to workspace $ws2]
+
+
+Nombres de programas
+VSC = [code]
+SublimeText = [subl3]
+Robo3t = [robo3t-snap]
+Google Chrome = [google-chrome-stable]
+
+
+Programas instalados
+pacman -S pcmanfm: Abre ventana de archivos
+pacman -S dmenu: Abrir programas instalados
+pacman -S nitrogen: Para cambiar fondo de escritorio
+pacman -S lxappearance: Para cambiar temas e iconos
+pacman -S picom: Transparencia
+pacman -S leafpad: Editor de texto
+pacman -S rofi: Menu
+pacman -S ttf-font-awesome: Instalar letras para personalizar
+pacman -S ttf-ubuntu-font-family: Fuente de ubuntu
+pacman -S thunar: Ventana de archivos
+pacman -S materia-gtk-theme: Tema
+pacman -S i3-lock-color
+pacman -S zsh
+
+Correr rofi
+En el archivo de configuración de i3 escribimos
+[bindsym $mod+x exec rofi -show run]
+#personalizar
+abrimos la carpeta /usr/share/rofi/themes/ en google ponemos temas rofi y buscamos en github, abrimos el tema que querramos, copiamos el codigo, y creamos un archivo.rasi en la carpeta themes, con el nombre del tema y pegamos el codigo y guardamos, para aceptar el tema es [alt + a]
+
+Cambiar distribución de teclado
+[setxkbmap -query] para mostrara las caracteristicas actuales del teclado
+[setxkbmap -layout latam]
+[setxkbmap latam]
+
+Cambiar fondo de escritorio´
+[nitrogen ruta/de/archivos/de/imagenes] *Se debe de tener un administrador de archivos instalados como pcmanfm
+Se debe de guardar la configuración si no cada vez que se inicie se perderan los cambios. Nos vamos al archivo de configuración de i3
+[.config/i3/config] y hasta abajo escribimos:
+[exec nitrogen --restore] guardamos y salimos
+
+Personalizar barra
+##Agregar iconos a los nombres de escritorios, tenemos que ir a la pagina (ya debe de estar instalado 'ttf-font-awesome') [https://fontawesome.com/cheatsheet] y en tipo brand icons y buscamos los que necesitemos, seleccionamos y copiamos y después pegamos en el archivo de configuración de i3 en las lineas que dice
+"Define names for default workspaces for which we configure...."
+[set $ws1 "1: 'iconCopiado' NombreDeAreaDeTrabajo"]
+[set $ws2 "2: 'iconCopiado' NombreDeAreaDeTrabajo"]
+para ver los cambios se debe de reiniciar la sesión
+##Cambiar fuente
+En el archivo de configuración de i3 en las lineas qque dice "Font for windows titles. Will also be used by the bar unless a different..." cambiamos la fuente que viene por defecto (monospace 8) y ponemos 
+[Ubuntu Regular 10] (ya teniendo instalado ttf-ubuntu-font-family)
+##Eliminar elementos de la barra
+Primero creamos una carpeta (como sudo) llamada [i3status] dentro de la carpeta [.config] después copiamos desde ~ 
+[sudo cp /etc/i3status.conf ~/.config/i3status/i3status.conf] ingresamos a [.confi/i3status] y damos permisos 
+[sudo chown otto:users i3status.conf] ingresamos al archivo de configuración de i3 y nos vamos a la línea llamada bar{} y en status ponemos
+[status_command i3status -c /home/otto/.config/i3status/i3status.conf] y ahora entramos con nano a [.config/i3status/i3status.conf] y editamos lo que no querramos que se vea, podemos agregar iconos de fontawesome
+
+
+
+
+Transparencia
+##Forma1
+Creamos una carpeta llamada [picom] en [home/otto/.config] y un archivo llamado [picom.conf] dentro escribimos
+[
+# menu        = { shadow = false; };
+dropdown_menu = { shadow = false; };
+popup_menu    = { shadow = false; };
+utility       = { shadow = false; };
+
+opacity-rule = [
+  "90:class_g = 'URxvt' && focused",
+  "60:class_g = 'URxvt' && !focused"
+];
+
+]
+En [home/otto/.conf/i3/config] escribimos 
+[exec --no-startup-id picom]
+##forma2
+en configuración de i3 al final ponemos
+[exec_always picom -f] y con nano ingresamos a
+[/etc/xdg/picom.conf] y buscamos la linea que diga "Vertical synchronization match the refresh rate" y comentamos la línea de abajo [vsync = true]
+
+Autotiling mosaicos
+yay -S autotiling 
+exec_always --no-startup-id autotiling
+
+Cambiar colores
+Ingresamos a la configuracion de i3 y después de la línea que dice "bindsym $mod+r "resize"" escribimos
+[
+set $bgcolor #color
+set $ibgcolor #color
+set $textcolor #color
+set $ubgcolor #color
+
+#		border	background	text	indicator
+client.focused	$bgcolor	$bgcolor	$textcolor	$bgcolor
+client.unfocused $ibgcolor	$ibgcolor	$textcolor	$ibgcolor
+client.focused_inactive $ibcolor	
+client.urgent	$ubgcolor
+dentro de bar ponemos
+[colors {
+	background #color
+	separator #color
+	#			border	background	text
+	focused_workspace	#color	#color		#color
+	inactive_workspace	#color	#color		#color
+ 	urgent_workspace	#color	#color		#color
+}]
+
+
+Personalizar pantalla de bloqueo
+BUscamos en google i3lock color y abrimos alguno de github y copiamos el código de lock.sh. Creamos una carpeta llamada scripts dentro de .config, creamos un archivo llamado lock dentro de scripts y pegamos el contenido. En la linea donde viene una ruta la cambiamos por [/usr/bin/i3lock \] y le damos permiso a ese archivo
+[sudo chomd +x scripts/lock] y en el archivo de configuración de i3, en la línea de keybinding i3lock, cambiamos la ruta [/home/otto/.config/scripts/lock], y para modificar los valores es en home/otto/.config/scripts/lock
+

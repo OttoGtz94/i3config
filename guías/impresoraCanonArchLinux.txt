@@ -1,0 +1,14 @@
+Para instalar Impresora Canon g3000
+instalamos el paquete
+yay -S cnijfilter2 
+
+Damos permisos
+gpasswd -a otto lp 
+gpasswd -a otto scanner 
+
+En el navegador vamos a la siguiente direccion
+http: // localhost: 631 / admin
+
+y añadimos la impresora
+
+
